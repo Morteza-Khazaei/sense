@@ -1,0 +1,4 @@
+Developers
+==========
+
+.. include:: ../AUTHORS.rst
