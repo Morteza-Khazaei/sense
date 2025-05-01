@@ -78,7 +78,7 @@ class Dobson85(EpsModel):
         Eq. 4.66 (Ulaby et al., 2014)
         """
 
-        e1 = (1.+0.66*self.bulk+self.mv**self.beta1*np.real(self.ew)**self.alpha - self.mv)**(1./self.alpha)
-        e2 = np.imag(self.ew)*self.mv**self.beta2
-        return e1 + 1.j*e2
+        err = (1.+0.66*self.bulk+self.mv**self.beta1*np.real(self.ew)**self.alpha - self.mv)**(1./self.alpha)
+        eri = np.imag(self.ew)*self.mv**self.beta2
+        return np.array([err + eri*1j,], dtype=complex)
 
