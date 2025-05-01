@@ -11,11 +11,16 @@ from . core import Reflectivity
 class Model(object):
     def __init__(self, **kwargs):
         self.theta = kwargs.get('theta', None)
+        self.phi = kwargs.get('phi', None)
+        self.dB = None
+        self.pol = None
 
         self._check1()
 
     def _check1(self):
         assert self.theta is not None, 'ERROR: no incidence angle was specified!'
+        assert self.phi is not None, 'ERROR: no azimuthal angle was specified!'
+        
 
     def sigma0(self, **kwargs):
         """
@@ -97,7 +102,7 @@ class RTModel(Model):
         """
 
         # ground backscatter = attenuated surface
-        self.G = Ground(self.surface, self.canopy, self.models['surface'], self.models['canopy'], theta=self.theta, freq=self.freq)
+        self.G = Ground(self.surface, self.canopy, self.models['surface'], self.models['canopy'], theta=self.theta, phi=self.phi, freq=self.freq)
         self.s0g = self.G.sigma()  # returns dictionary with different components
 
         # canopy contribution
