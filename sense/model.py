@@ -168,9 +168,9 @@ class Ground(object):
         self.phi = phi
         self.freq = freq
 
-        assert self.theta is None, 'Theta/incidence angle needs to be provided'
-        assert self.phi is None, 'Phi/azimuthal angle needs to be provided'
-        assert self.freq is None, 'Frequency needs to be provided'
+        assert self.theta is not None, 'Theta/incidence angle needs to be provided'
+        assert self.phi is not None, 'Phi/azimuthal angle needs to be provided'
+        assert self.freq is not None, 'Frequency needs to be provided'
         
         self._check(RT_s, RT_c)
         self._set_models(RT_s, RT_c)
