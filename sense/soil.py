@@ -106,7 +106,7 @@ class Soil(object):
 
     def _check(self):
         if self.acl is not None:
-            assert self.acl in ['G','E'], 'Invalid form of autocorrelation function specified'
+            assert self.acl in ['G','E', 'P'], 'Invalid form of autocorrelation function specified'
         if self.surface != 'WaterCloud':
             assert self.s is not None
 

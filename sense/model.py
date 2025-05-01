@@ -204,7 +204,6 @@ class Ground(object):
             self.rt_s = I2EM(self.freq, self.S.eps, self.S.s, self.S.l, self.theta, xpol=False, auto=False)
         elif RT_s == 'AIEM':
             self.rt_s = AIEM(frq_ghz=self.freq, theta_i=self.theta, theta_s=self.theta, phi_i=0., phi_s=self.phi, sigma=self.S.s, cl=self.S.l, eps=self.S.eps, itype=self.S.acl, todB=False)
-            print(self.rt_s.run())
         elif RT_s == 'WaterCloud':
             if (self.S.C_hh is None) or (self.S.D_hh is None) or (self.S.C_vv is None) or (self.S.D_vv is None) or (self.S.C_hv is None) or (self.S.D_hv is None):
                 assert False, 'Empirical surface parameters for Water Cloud model not specified!'
@@ -300,12 +299,10 @@ class Ground(object):
         # canopy transmisivities
         t_h = self.rt_c.t_h
         t_v = self.rt_c.t_v
-        print(t_h, t_v)
 
         # backscatter
         s_hh = self.rt_s.hh*t_h*t_h
         s_vv = self.rt_s.vv*t_v*t_v
-        print(s_hh, s_vv)
 
         # if self.RT_s == 'I2EM':
         #     s_hv = None
