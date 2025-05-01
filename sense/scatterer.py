@@ -17,6 +17,9 @@ class Scatterer(object):
         self.sigma_s_hv = kwargs.get('sigma_s_hv', None)  # particle scattering cross area
         assert self.sigma_s_hv is not None, 'Particle HV scattering cross section needs to be specified [m**-2]'
 
+        self.sigma_s_vh = kwargs.get('sigma_s_vh', None)  # particle scattering cross area
+        assert self.sigma_s_vh is not None, 'Particle VH scattering cross section needs to be specified [m**-2]'
+
 
 class ScatIso(Scatterer):
     """
@@ -37,7 +40,7 @@ class ScatIso(Scatterer):
 
         note that this is NOT the scattering cross section of a single particle!
         """
-        return {'hh' : self.sigma_s_hh, 'vv' : self.sigma_s_vv, 'hv' : self.sigma_s_hv}
+        return {'hh' : self.sigma_s_hh, 'vv' : self.sigma_s_vv, 'hv' : self.sigma_s_hv, 'vh' : self.sigma_s_vh}
 
     def sigma_v_bist(self):
         # same as volume backscattering coefficient (Eq. 11.19)
@@ -55,7 +58,7 @@ class ScatRayleigh(Scatterer):
 
     def sigma_v_back(self):
         # sigma_s_pp is assumed to correspond to volume extinction coefficient
-        return {'hh' : 1.5*self.sigma_s_hh, 'vv' : 1.5*self.sigma_s_vv, 'hv' : np.nan}
+        return {'hh' : 1.5*self.sigma_s_hh, 'vv' : 1.5*self.sigma_s_vv, 'hv' : 1.5*self.sigma_s_hv, 'vh' : 1.5*self.sigma_s_vh}
 
     def sigma_v_bist(self):
         # same as sigma_v_back (Eq. 11.22)

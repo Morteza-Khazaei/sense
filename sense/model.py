@@ -255,13 +255,12 @@ class Ground(object):
 
     def sigma_g_c_g(self):
 
-
         s_vv = self.rt_c.sigma_vol_back['vv']*np.cos(self.theta)*self.rho_v*self.rho_v*(self.rt_c.t_v*self.rt_c.t_v-self.rt_c.t_v**4.) / (self.C.ke_v + self.C.ke_v)
         s_hh = self.rt_c.sigma_vol_back['hh']*np.cos(self.theta)*self.rho_h*self.rho_h*(self.rt_c.t_h*self.rt_c.t_h-self.rt_c.t_h**4.) / (self.C.ke_h + self.C.ke_h)
         s_hv = self.rt_c.sigma_vol_back['hv']*np.cos(self.theta)*self.rho_h*self.rho_v*(self.rt_c.t_h*self.rt_c.t_v-self.rt_c.t_h**2.*self.rt_c.t_v**2.) / (self.C.ke_h + self.C.ke_v)
+        s_vh = self.rt_c.sigma_vol_back['vh']*np.cos(self.theta)*self.rho_v*self.rho_h*(self.rt_c.t_v*self.rt_c.t_h-self.rt_c.t_v**2.*self.rt_c.t_h**2.) / (self.C.ke_v + self.C.ke_h)
 
-
-        return {'vv' : s_vv, 'hh' : s_hh, 'hv' : s_hv}
+        return {'vv' : s_vv, 'hh' : s_hh, 'hv' : s_hv, 'vh' : s_vh}
 
 
     def sigma_c_g(self, coherent=None):
@@ -379,9 +378,9 @@ class CanopyHomoRT(object):
     def _set_scat_type(self):
         """ set scatterer type """
         if self.stype == 'iso':
-            self.SC = ScatIso(sigma_s_hh=self.ks_h, sigma_s_vv=self.ks_v, sigma_s_hv=self.ks_v)   # note that the cross pol scatt. coeff. is the same as the copol due to isotropic behavior
+            self.SC = ScatIso(sigma_s_hh=self.ks_h, sigma_s_vv=self.ks_v, sigma_s_hv=self.ks_v, sigma_s_vh=self.ks_h)   # note that the cross pol scatt. coeff. is the same as the copol due to isotropic behavior
         elif self.stype == 'rayleigh':
-            self.SC = ScatRayleigh(sigma_s_hh = self.ks_h, sigma_s_vv=self.ks_v, sigma_s_hv=self.ks_v)  # eq. 11.22
+            self.SC = ScatRayleigh(sigma_s_hh = self.ks_h, sigma_s_vv=self.ks_v, sigma_s_hv=self.ks_v, sigma_s_vh=self.ks_h)  # eq. 11.22
         elif self.stype == 'cloud':
             assert False  # here implemenatation of 11.5 then
         else:
@@ -434,15 +433,9 @@ class CanopyHomoRT(object):
         s_hh = (1.-self.t_h*self.t_h)*(self.sigma_vol_back['hh']*np.cos(self.theta))/(self.ke_h+self.ke_h)
         s_vv = (1.-self.t_v*self.t_v)*(self.sigma_vol_back['vv']*np.cos(self.theta))/(self.ke_v+self.ke_v)
         s_hv = (1.-self.t_h*self.t_v)*(self.sigma_vol_back['hv']*np.cos(self.theta))/(self.ke_h+self.ke_v)
-        # pdb.set_trace()
+        s_vh = (1.-self.t_v*self.t_h)*(self.sigma_vol_back['vh']*np.cos(self.theta))/(self.ke_v+self.ke_h)
 
-
-        # this seems o.k. here
-#        a=self.sigma_vol_back['hh']
-#        b=1.5*self.ks_h
-#        print a,b,a-b, a/b, self.ks_h
-
-        return {'hh' : s_hh, 'vv' : s_vv, 'hv' : s_hv}
+        return {'hh' : s_hh, 'vv' : s_vv, 'hv' : s_hv, 'vh' : s_vh}
 
 
 # 502-503
@@ -472,6 +465,8 @@ class WaterCloudCanopy(object):
         self.B_vv = kwargs.get('B_vv', None)
         self.A_hv = kwargs.get('A_hv', None)
         self.B_hv = kwargs.get('B_hv', None)
+        self.A_vh = kwargs.get('A_vh', None)
+        self.B_vh = kwargs.get('B_vh', None)
         self.V1 = kwargs.get('V1', None)
         self.V2 = kwargs.get('V2', None)
         self.theta = kwargs.get('theta', None)
@@ -489,16 +484,19 @@ class WaterCloudCanopy(object):
         assert self.B_vv is not None
         assert self.A_hv is not None
         assert self.B_hv is not None
+        assert self.A_vh is not None
+        assert self.B_vh is not None
         assert self.V1 is not None
         assert self.V2 is not None
         assert self.theta is not None
 
     def sigma_c(self):
-        s_hh =  self.A_hh * self.V1 * np.cos(self.theta) * (1 - self._tau(self.B_hh))
+        s_hh = self.A_hh * self.V1 * np.cos(self.theta) * (1 - self._tau(self.B_hh))
         s_vv = self.A_vv * self.V1 * np.cos(self.theta) * (1 - self._tau(self.B_vv))
-        s_hv =  self.A_hv * self.V1 * np.cos(self.theta) * (1 - self._tau(self.B_hv))
+        s_hv = self.A_hv * self.V1 * np.cos(self.theta) * (1 - self._tau(self.B_hv))
+        s_vh = self.A_vh * self.V1 * np.cos(self.theta) * (1 - self._tau(self.B_vh))
 
-        return {'hh' : s_hh, 'vv' : s_vv, 'hv' : s_hv}
+        return {'hh' : s_hh, 'vv' : s_vv, 'hv' : s_hv, 'vh' : s_vh}
 
     def _tau(self, B):
         return np.exp(-2 * B / np.cos(self.theta) * self.V2)
