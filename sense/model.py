@@ -3,7 +3,7 @@ Basic class for scattering modelling
 """
 import pdb
 import numpy as np
-from . surface import Oh92, Oh04, Dubois95, WaterCloudSurface, I2EM
+from . surface import Oh92, Oh04, Dubois95, WaterCloudSurface, I2EM, AIEM
 from . util import f2lam
 from . scatterer import ScatIso, ScatRayleigh
 from . core import Reflectivity
@@ -140,7 +140,7 @@ class Ground(object):
     sigma_pq
     where p is receive and q is transmit polarization
     """
-    def __init__(self, S, C, RT_s, RT_c, theta=None, freq=None):
+    def __init__(self, S, C, RT_s, RT_c, theta=None, phi=None, freq=None):
         """
         calculate the attenuated ground contribution
         to the scattering
@@ -157,23 +157,31 @@ class Ground(object):
             key specifying the canopy scattering model
         theta : float/array
             incidence angle [rad]
+        phi : float/array
+            azimuthal angle [rad]
         freq : float
             frequency[GHz]
         """
         self.S = S
         self.C = C
         self.theta = theta
-        assert self.theta is not None, 'Theta/incidence angle needs to be provided'
-        self._check(RT_s, RT_c)
+        self.phi = phi
         self.freq = freq
-        assert self.freq is not None, 'Frequency needs to be provided'
+
+        assert self.theta is None, 'Theta/incidence angle needs to be provided'
+        assert self.phi is None, 'Phi/azimuthal angle needs to be provided'
+        assert self.freq is None, 'Frequency needs to be provided'
+        
+        self._check(RT_s, RT_c)
         self._set_models(RT_s, RT_c)
+        
         if self.S.surface != 'WaterCloud':
             self._calc_rho()
+        
         self.RT_s = RT_s
 
     def _check(self, RT_s, RT_c):
-        valid_surface = ['Oh92', 'Oh04', 'Dubois95', 'WaterCloud', 'I2EM']
+        valid_surface = ['Oh92', 'Oh04', 'Dubois95', 'WaterCloud', 'I2EM', 'AIEM']
         valid_canopy = ['turbid_rayleigh', 'turbid_isotropic', 'water_cloud']
         assert RT_s in valid_surface, 'ERROR: invalid surface scattering model was chosen!'
         assert RT_c in valid_canopy, 'ERROR: invalid canopy model: ' + RT_c
@@ -189,6 +197,10 @@ class Ground(object):
         elif RT_s == 'I2EM':
             # assert False, 'Implementation not completed'
             self.rt_s = I2EM(self.freq, self.S.eps, self.S.s, self.S.l, self.theta, xpol=False, auto=False)
+        elif RT_s == 'AIEM':
+            theta_s = self.theta
+            phi_i = 0.
+            self.rt_s = AIEM(self.freq, self.theta, theta_s, phi_i, self.phi, self.S.s, self.S.l, self.S.eps, self.S.acl)
         elif RT_s == 'WaterCloud':
             if (self.S.C_hh is None) or (self.S.D_hh is None) or (self.S.C_vv is None) or (self.S.D_vv is None) or (self.S.C_hv is None) or (self.S.D_hv is None):
                 assert False, 'Empirical surface parameters for Water Cloud model not specified!'

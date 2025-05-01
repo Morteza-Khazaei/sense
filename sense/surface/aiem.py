@@ -5,7 +5,47 @@ from . scatter import SurfaceScatter
 
 
 class AIEM(SurfaceScatter):
-    
+    """
+    Advanced Integral Equation Model (AIEM)
+
+    Inputs:
+    -------
+    frq_ghz : float
+            frequency [GHz]
+    theta_i : float
+            incidence angle [deg]
+    theta_s : float
+            specular angle [deg]
+    phi_i : float
+            incidence angle [deg]
+    phi_s : float
+            specular angle [deg]
+    sigma : float
+        vertical surface roughness  [m]
+    cl : float
+        autocorrelation length [m]
+    eps : complex
+        relative dielectric permitivity
+    itype : str
+        type of autocorrelation function
+        chose from: 'G', 'E', 'P'
+            G: Gaussian correlated surface
+            E: Exponential correlated surface
+            P: 1.5 power surface
+
+    Outputs:
+    --------
+    VV : float
+        vertical/vertical bare soil backscattering coefficient [dB]
+    VH : float
+        vertical/horizontal bare soil backscattering coefficient [dB]
+    HV : float
+        horizontal/vertical bare soil back scattering coefficient [dB]
+    HH : float
+        horizontal/horizontal bare soil back scattering coefficient [dB]
+
+    """
+
     ERROR = 1e-10
 
     def __init__(self, frq_ghz, theta_i, theta_s, phi_i, phi_s, sigma, cl, eps, itype) -> None:
@@ -57,11 +97,11 @@ class AIEM(SurfaceScatter):
         Ivv, Ihh, Ihv, Ivh, CIvv, CIhh, CIhv, CIvh = self.compute_scattering_coefficients(rv, rh, rvh, rhv, fvv, fhh, fhv, fvh)
 
         # Compute backscattering from the surface
-        self.VV, self.HH, self.HV, self.VH = self.compute_sigma0(Ivv, CIvv, Ihh, CIhh, Ihv, CIhv, Ivh, CIvh)
+        self.vv, self.hh, self.hv, self.vh = self.compute_sigma0(Ivv, CIvv, Ihh, CIhh, Ihv, CIhv, Ivh, CIvh)
 
 
     def run(self):
-        return self.HH, self.VH, self.HV, self.VV
+        return self.vv, self.vh, self.hv, self.hh
 
 
     def compute_roughness_spectrum(self):
@@ -83,13 +123,13 @@ class AIEM(SurfaceScatter):
             fn = n
             K = self.kl * np.sqrt((self.sis * self.csfs - self.si * self.csfi) ** 2 + (self.sis * self.sfs - self.si * self.sfi) ** 2)
     
-            if self.itype == '1':
+            if self.itype == 'G':
                 # Gaussian correlated surface
                 spectra_1[n-1] = self.kl2 * np.exp(-K * K / (4 * fn)) / (2 * fn)
-            elif self.itype == '2':
+            elif self.itype == 'E':
                 # Exponential correlated surface
                 spectra_1[n-1] = (self.kl / fn) ** 2 * (1 + (K / fn) ** 2) ** (-1.5)
-            elif self.itype == '3':
+            elif self.itype == 'P':
                 # 1.5 power surface
                 e = 1.5 * fn - 1
                 y = 1.5 * fn
@@ -313,10 +353,16 @@ class AIEM(SurfaceScatter):
         sigma02 = np.real(allterm2)
         sigma03 = np.real(allterm3)
 
-        VV = 10 * np.log10(sigma00)
-        HH = 10 * np.log10(sigma01)
-        HV = 10 * np.log10(sigma02)
-        VH = 10 * np.log10(sigma03)
+        if self.todB:
+            VV = 10 * np.log10(sigma00)
+            HH = 10 * np.log10(sigma01)
+            HV = 10 * np.log10(sigma02)
+            VH = 10 * np.log10(sigma03)
+        else:
+            VV = sigma00
+            HH = sigma01
+            HV = sigma02
+            VH = sigma03
 
         return VV, HH, HV, VH
 
