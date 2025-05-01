@@ -20,7 +20,7 @@ class Model(object):
     def _check1(self):
         assert self.theta is not None, 'ERROR: no incidence angle was specified!'
         assert self.phi is not None, 'ERROR: no azimuthal angle was specified!'
-        
+
 
     def sigma0(self, **kwargs):
         """
@@ -117,7 +117,7 @@ class RTModel(Model):
 
         # combine backscatter values
         self.stot = {}
-        for k in ['hh', 'vv', 'hv']:
+        for k in ['hh', 'vv', 'hv', 'vh']:
             self.stot.update({k : self._combine(k)})
 
 
@@ -126,15 +126,15 @@ class RTModel(Model):
         combine previous calculated backscatter values for SSRT (isotropic or rayleigh) or Water Cloud model
         """
 
-        if self.s0g[k] is None:
-            return None
-        if self.s0c[k] is None:
-            return None
+        # if self.s0g[k] is None:
+        #     return None
+        # if self.s0c[k] is None:
+        #     return None
         # return np.nansum(np.array([self.s0g[k], self.s0c[k], self.s0gcg[k], self.s0cgt[k]]))
         if (self.models['canopy'] == 'turbid_isotropic') or (self.models['canopy'] == 'turbid_rayleigh'):
             return np.array(self.s0g[k] + self.s0c[k] + self.s0gcg[k] + self.s0cgt[k])
         elif (self.models['canopy'] == 'water_cloud'):
-            return np.array(self.s0g[k]+self.s0c[k])
+            return np.array(self.s0g[k] + self.s0c[k])
         else:
             assert False, 'unknown canopy model!'
 
@@ -313,6 +313,7 @@ class Ground(object):
             s_hv = None
         else:
             s_hv = self.rt_s.hv*t_v*t_h
+            s_vh = self.rt_s.vh*t_v*t_h
 
 
         return {'vv' : s_vv, 'hh' : s_hh, 'hv' : s_hv}
