@@ -52,10 +52,10 @@ class AIEM(SurfaceScatter):
 
         self.er = eps
         self.ur = 1
-        theta_i = np.deg2rad(theta_i)
-        theta_s = np.deg2rad(theta_s)
-        phi_i = np.deg2rad(phi_i)
-        phi_s = np.deg2rad(phi_s)
+        # theta_i = np.deg2rad(theta_i)
+        # theta_s = np.deg2rad(theta_s)
+        # phi_i = np.deg2rad(phi_i)
+        # phi_s = np.deg2rad(phi_s)
         self.itype = itype
 
         frq_hz = frq_ghz * 1.0e9                                # Transform from GHz to Hz.
