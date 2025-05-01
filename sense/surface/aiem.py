@@ -48,7 +48,7 @@ class AIEM(SurfaceScatter):
 
     ERROR = 1e-10
 
-    def __init__(self, frq_ghz, theta_i, theta_s, phi_i, phi_s, sigma, cl, eps, itype) -> None:
+    def __init__(self, frq_ghz, theta_i, theta_s, phi_i, phi_s, sigma, cl, eps, itype, todB=False) -> None:
 
         self.er = eps
         self.ur = 1
@@ -57,6 +57,7 @@ class AIEM(SurfaceScatter):
         # phi_i = np.deg2rad(phi_i)
         # phi_s = np.deg2rad(phi_s)
         self.itype = itype
+        self.todB = todB
 
         frq_hz = frq_ghz * 1.0e9                                # Transform from GHz to Hz.
         sigma = sigma * 1.0e2                                   # Convert from m to cm.
