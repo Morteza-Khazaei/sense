@@ -311,6 +311,7 @@ class Ground(object):
             # s_hv = self.rt_s.hv*t_v*t_h
         elif self.rt_s.hv is None:
             s_hv = None
+            s_vh = None
         else:
             s_hv = self.rt_s.hv*t_v*t_h
             s_vh = self.rt_s.vh*t_v*t_h
