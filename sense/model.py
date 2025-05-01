@@ -203,9 +203,7 @@ class Ground(object):
             # assert False, 'Implementation not completed'
             self.rt_s = I2EM(self.freq, self.S.eps, self.S.s, self.S.l, self.theta, xpol=False, auto=False)
         elif RT_s == 'AIEM':
-            theta_s = self.theta
-            phi_i = 0.
-            self.rt_s = AIEM(self.freq, self.theta, theta_s, phi_i, self.phi, self.S.s, self.S.l, self.S.eps, self.S.acl)
+            self.rt_s = AIEM(frq_ghz=self.freq, theta_i=self.theta, theta_s=self.theta, phi_i=0., phi_s=self.phi, sigma=self.S.s, cl=self.S.l, eps=self.S.eps, itype=self.S.acl, todB=False)
             print(self.rt_s.run())
         elif RT_s == 'WaterCloud':
             if (self.S.C_hh is None) or (self.S.D_hh is None) or (self.S.C_vv is None) or (self.S.D_vv is None) or (self.S.C_hv is None) or (self.S.D_hv is None):
