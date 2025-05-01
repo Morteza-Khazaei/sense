@@ -206,6 +206,7 @@ class Ground(object):
             theta_s = self.theta
             phi_i = 0.
             self.rt_s = AIEM(self.freq, self.theta, theta_s, phi_i, self.phi, self.S.s, self.S.l, self.S.eps, self.S.acl)
+            print(self.rt_s.run())
         elif RT_s == 'WaterCloud':
             if (self.S.C_hh is None) or (self.S.D_hh is None) or (self.S.C_vv is None) or (self.S.D_vv is None) or (self.S.C_hv is None) or (self.S.D_hv is None):
                 assert False, 'Empirical surface parameters for Water Cloud model not specified!'
