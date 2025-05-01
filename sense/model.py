@@ -285,9 +285,10 @@ class Ground(object):
         s_vv = n  * self.rt_c.sigma_vol_bistatic['vv'] * self.C.d *(self.rho_v + self.rho_v)*self.rt_c.t_v*self.rt_c.t_v
         s_hh = n  * self.rt_c.sigma_vol_bistatic['hh'] * self.C.d *(self.rho_h + self.rho_h)*self.rt_c.t_h*self.rt_c.t_h
         s_hv = 1. * self.rt_c.sigma_vol_bistatic['hv'] * self.C.d *(self.rho_v + self.rho_h)*self.rt_c.t_h*self.rt_c.t_v
+        s_vh = 1. * self.rt_c.sigma_vol_bistatic['vh'] * self.C.d *(self.rho_h + self.rho_v)*self.rt_c.t_v*self.rt_c.t_h
 
 
-        return {'vv' : s_vv, 'hh' : s_hh, 'hv' : s_hv}
+        return {'vv' : s_vv, 'hh' : s_hh, 'hv' : s_hv, 'vh' : s_vh}
 
 
 
@@ -315,7 +316,7 @@ class Ground(object):
             s_vh = self.rt_s.vh*t_v*t_h
 
 
-        return {'vv' : s_vv, 'hh' : s_hh, 'hv' : s_hv}
+        return {'vv' : s_vv, 'hh' : s_hh, 'hv' : s_hv, 'vh' : s_vh}
 
 
 class CanopyHomoRT(object):
