@@ -66,6 +66,8 @@ class AIEM(SurfaceScatter):
         self.ks = k * sigma                                     # roughness parameter
         self.kl = k * cl
 
+        super(AIEM, self).__init__(eps=self.er, ks=self.ks, kl=self.kl, theta=theta_i)
+
         self.si = np.sin(theta_i)
         self.sis = np.sin(theta_s)
         self.sfi = np.sin(phi_i)
