@@ -42,7 +42,7 @@ class Model(object):
 
         if self.dB:
             assert False, 'Not supported for dictionaries yet!'
-            return 10.*np.log10(self._sigma0())
+            # return 10.*np.log10(self._sigma0())
         else:
             return self._sigma0()
 
@@ -301,15 +301,17 @@ class Ground(object):
         # canopy transmisivities
         t_h = self.rt_c.t_h
         t_v = self.rt_c.t_v
+        print(t_h, t_v)
 
         # backscatter
         s_hh = self.rt_s.hh*t_h*t_h
         s_vv = self.rt_s.vv*t_v*t_v
+        print(s_hh, s_vv)
 
-        if self.RT_s == 'I2EM':
-            s_hv = None
-            # s_hv = self.rt_s.hv*t_v*t_h
-        elif self.rt_s.hv is None:
+        # if self.RT_s == 'I2EM':
+        #     s_hv = None
+        #     # s_hv = self.rt_s.hv*t_v*t_h
+        if self.rt_s.hv is None:
             s_hv = None
             s_vh = None
         else:
